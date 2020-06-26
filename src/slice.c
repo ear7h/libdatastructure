@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "slice.h"
+#include <datastructure/slice.h>
 
+#define BYTEPTR(x) ((uint8_t *) x)
 
 static void zero_fill(void * data, size_t size) {
+	uint8_t * bytes = BYTEPTR(data);
     while (size--) {
-        *((uint8_t *)data++) = 0;
+        *bytes++ = 0;
     }
 }
 
@@ -16,7 +18,7 @@ slice_t slice_new(size_t elsize, size_t len, size_t cap) {
         cap = len;
     }
 
-    assert(len > cap);
+    assert(len <= cap);
 
     void * data = calloc(elsize, cap);
     if (!data) {
@@ -52,22 +54,22 @@ slice_t slice_append(slice_t s, void * el) {
         s.data = data;
     }
 
-    memcpy(s.data + s.elsize * s.len, el, s.elsize);
+    memcpy(BYTEPTR(s.data) + s.elsize * s.len, el, s.elsize);
     s.len++;
     return s;
 }
 
 void * slice_index(slice_t s, size_t idx) {
-    return s.data + s.elsize * idx;
+    return BYTEPTR(s.data) + s.elsize * idx;
 }
 
 slice_t slice_slice(slice_t s, size_t start, size_t end) {
     assert(start < s.len && end < s.len);
 
-    slice_t ret = s;
-    s.data += s.elsize * start;
+    s.data = BYTEPTR(s.data) + s.elsize * start;
     s.cap = s.cap - start;
     s.len = end - start;
+    return s;
 }
 
 void slice_free(slice_t * s) {

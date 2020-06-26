@@ -34,5 +34,17 @@ void test_failf(T *, const char *, ...);
 // test.
 void test_fatalf(T *, const char *, ...);
 
+#define test_assert(test, expr) if (!(expr)) {\
+    test_fatalf(test, "%s:%d: assertion failed: %s", \
+        __FILE__, \
+        __LINE__, \
+        #expr);\
+}
+
+// test_skipfatalf skipst the test
+// with a message and stops execution of the current
+// test.
+void test_skipfatalf(T *, const char *, ...);
+
 // test_logf writes a message to the output log.
 void test_logf(T *, const char *, ...);

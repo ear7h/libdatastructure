@@ -2,3 +2,5 @@
 *.o
 *.dSYM
 *.test
+
+.gdb_history
