@@ -83,6 +83,10 @@ int main(int argc, char **argv) {
 			//regex = NULL;
 			break;
 		case 2:
+			if (!argv[1][0]) {
+				break;
+			}
+
 			regex = (regex_t *) malloc(sizeof(*regex));
 			int err = regcomp(regex, argv[1], REG_EXTENDED | REG_NOSUB);
 			if (err) {
@@ -161,6 +165,7 @@ found_end:
 		// run the test
 		if (!setjmp(t.fatal_ret)) {
 			runs++;
+			printf("run: %s\n", t.test_name);
 			t.fn(&t);
 		}
 

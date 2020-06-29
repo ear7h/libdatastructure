@@ -3,6 +3,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <datastructure/iterator.h>
+
+// slice_t is a container of cotigious memory that can grow
 typedef struct slice {
     size_t elsize;
     size_t len;
@@ -10,28 +13,38 @@ typedef struct slice {
     void * data;
 } slice_t;
 
-// initializes a new slice
+// slice_new returns a new slice for elements of elsize, length len,
+// and capacity cap.
 slice_t slice_new(size_t elsize, size_t len, size_t cap);
 
-// get the length of a slice
+// slice_len returns the length of s
 size_t slice_len(slice_t s);
 
-// get the capacity of a slice
+// slice_cap returns the capacity of s
 size_t slice_cap(slice_t s);
 
-// append items to the end of a slice
+// slice_append appends items to the end of a slice
 slice_t slice_append(slice_t s, void * el);
 
-// get a pointer to the data at the specific index
-void * slice_index(slice_t s, size_t idx);
+// slice_index returns a pointer to the data at index idx
+void * slice_idx(slice_t s, size_t idx);
 
-// get a sub-slice of an exisiting slice
+// slice_slcie returns a subslice of s
 slice_t slice_slice(slice_t s, size_t start, size_t end);
+
+// slice_iter creates a new iterator for the slice
+iterator_t slice_iter(slice_t s);
 
 // free data associated with a slice. It takes a pointer to clear
 // the state of the slice object, preventing potential erroneous
 // memory accesses.
 void slice_free(slice_t * s);
 
-#define SLICE_RANGE(idx, slc) (size_t idx = 0; idx < slc.len; idx++)
+// SLICE_RANGE is a wrapper over ITERATOR_RANGE (see iterator.h) where the
+// second argument is a slice rather than an iterator.
+//
+// TODO: build the iterator in the macro using header-defined,
+// static methods for advance and free.
+#define SLICE_RANGE(valdcl, slicev, body) \
+    ITERATOR_RANGE(valdcl, slice_iter(slicev), body)
 

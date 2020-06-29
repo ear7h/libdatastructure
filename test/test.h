@@ -1,5 +1,6 @@
 #pragma once
 #include <stdarg.h>
+#include <stddef.h>
 
 // T is an object that stores test state and is needed
 // to execute testing operations like logging and failing.

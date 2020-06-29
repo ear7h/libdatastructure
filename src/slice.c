@@ -6,13 +6,6 @@
 
 #define BYTEPTR(x) ((uint8_t *) x)
 
-static void zero_fill(void * data, size_t size) {
-	uint8_t * bytes = BYTEPTR(data);
-    while (size--) {
-        *bytes++ = 0;
-    }
-}
-
 slice_t slice_new(size_t elsize, size_t len, size_t cap) {
     if (cap == 0) {
         cap = len;
@@ -20,17 +13,18 @@ slice_t slice_new(size_t elsize, size_t len, size_t cap) {
 
     assert(len <= cap);
 
-    void * data = calloc(elsize, cap);
-    if (!data) {
-        slice_t ret = {0};
-        return ret;
-    }
+    void * data = NULL;
+	if (cap) {
+		data = calloc(elsize, cap);
+	}
+
+	assert((data == NULL) == (cap == 0));
 
     slice_t ret = {
-        elsize = elsize,
-        len = len,
-        cap = cap,
-        data = data,
+        .elsize = elsize,
+        .len = len,
+        .cap = cap,
+        .data = data,
     };
 
     return ret;
@@ -46,12 +40,12 @@ size_t slice_cap(slice_t s) {
 
 slice_t slice_append(slice_t s, void * el) {
     if (s.len == s.cap) {
-        void * data = malloc(s.cap * 2);
-        if (!data) {
-            return s;
-        }
+		size_t newcap = 1 + s.cap * 2;
+        void * data = realloc(s.data, newcap * s.elsize);
+		assert(data);
 
         s.data = data;
+		s.cap = newcap;
     }
 
     memcpy(BYTEPTR(s.data) + s.elsize * s.len, el, s.elsize);
@@ -59,7 +53,7 @@ slice_t slice_append(slice_t s, void * el) {
     return s;
 }
 
-void * slice_index(slice_t s, size_t idx) {
+void * slice_idx(slice_t s, size_t idx) {
     return BYTEPTR(s.data) + s.elsize * idx;
 }
 
