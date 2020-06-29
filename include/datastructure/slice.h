@@ -5,7 +5,7 @@
 
 #include <datastructure/iterator.h>
 
-// slice_t is a container of cotigious memory that can grow
+// slice_t is a resizeable array.
 typedef struct slice {
     size_t elsize;
     size_t len;
@@ -26,18 +26,17 @@ size_t slice_cap(slice_t s);
 // slice_append appends items to the end of a slice
 slice_t slice_append(slice_t s, void * el);
 
-// slice_index returns a pointer to the data at index idx
+// slice_idx returns a pointer to the data at index idx
 void * slice_idx(slice_t s, size_t idx);
 
-// slice_slcie returns a subslice of s
+// slice_slice returns a subslice of s
 slice_t slice_slice(slice_t s, size_t start, size_t end);
 
 // slice_iter creates a new iterator for the slice
 iterator_t slice_iter(slice_t s);
 
-// free data associated with a slice. It takes a pointer to clear
-// the state of the slice object, preventing potential erroneous
-// memory accesses.
+// slice_free frees heap data associated with a slice and sets
+// s to have 0 length and 0 capacity.
 void slice_free(slice_t * s);
 
 // SLICE_RANGE is a wrapper over ITERATOR_RANGE (see iterator.h) where the

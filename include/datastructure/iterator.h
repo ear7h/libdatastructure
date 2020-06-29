@@ -2,7 +2,10 @@
 
 #include <stdbool.h>
 
-// iterator_t is an interface
+// iterator_t is an interface for iterating items in a container.
+// .free must be called on the iterator once it is no longer needed;
+// though, the ITERATOR_RANGE macro (and wrappers for it) make this call
+// already.
 typedef struct iterator {
     void * obj;
     void * val;
@@ -17,11 +20,15 @@ typedef struct iterator {
 // example:
 //
 //      slice_t my_int_slice = slice_new(sizeof(int), 0, 0);
+//
 //      for (int i = 0; i <= 3; i++) {
 //          my_int_slice = slice_append(my_int_slice, &i);
 //      }
+//
 //      int sum = 0;
+//
 //      SLICE_RANGE(int * v, slice_iterator(my_int_slice), sum += *v);
+//
 //      assert(sum == 6);
 //
 #define ITERATOR_RANGE(valdcl, iterv, body) { \
